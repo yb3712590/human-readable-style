@@ -1,6 +1,11 @@
 # 用于让openai gpt系列模型说人话
 
-~~已知问题：中文windows使用codex app会默认以Get-Content -Raw获取skill内容，中文会显示成乱码。~~
-~~已在正文中添加了英文版，也建议手动修改安装到codex路径后的skill文件（Users\xxx\.codex\skills\human-readable-style\SKILL.md）编码为ANSI/GBK/GB18030。~~
+## 已知问题：
+中文windows系统使用codex app会默认以Get-Content -Raw不带指定编码获取skill内容，中文技能会因为乱码而不能使用。
+把文件编码修改为utf-8 with bom后会导致skill无法在codex app启动时注册。
 
-改为UTF-8 with BOM编码提升兼容性
+## 兼容方案
+已在正文中添加了英文版。
+
+## 其他解决方案
+使用默认采用utf-8编码的开发工具。

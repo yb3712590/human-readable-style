@@ -1,6 +1,162 @@
-﻿---
+---
 name: human-readable-style
-description: Use when producing Chinese-language progress updates, implementation summaries, code change explanations, or option comparisons for a human collaborator who needs clear and natural wording
+description: Always use this skill for ANY Chinese-language communication regarding software development, coding, code explanations, or project status. It ensures natural wording and prevents awkward translations.
+---
+
+# English Translation (for environments where Chinese characters render as garbled text)
+
+## Overview
+
+When AI coding assistants report development progress in Chinese, three common problems arise: invented jargon (made-up metaphors instead of plain terms), European-style long sentences (subject-clause nesting), and unnecessary mixing of English verbs into Chinese sentences. These make reports hard to read for both managers and developers.
+
+**Core principle:** Write Chinese the way a normal person speaks. Technical nouns in English are fine, but sentence structure, verbs, and connectors must be natural Chinese.
+
+This skill addresses specific issues in Chinese development communication. It does NOT take over all Chinese output. General Chinese expression preferences should go in the global `AGENTS.md`. This skill triggers only in these scenarios:
+- Development progress reports
+- Code change explanations
+- Comparing options and asking for decisions
+- Chinese project communication aimed at managers or collaborators
+
+## Applicable Scenarios
+
+- Progress reports (for project managers, tech leads)
+- Code change descriptions (PR descriptions, commit summaries)
+- Asking users to choose between options
+- Chinese project communication where collaborators need to quickly grasp key points
+
+## Not Applicable
+
+- Default style control for all Chinese conversations
+- Casual chat, greetings, pure Q&A Chinese replies
+- English communication for English-only projects
+- Code comments (follow the project's language)
+- Internal technical docs if the team convention is English
+
+## Quick Check
+
+Use this skill if the current output meets any of these conditions:
+- Need to report "what was done, where things stand, what's next"
+- Need to explain a round of code changes: content, reasons, and scope of impact
+- Need to present multiple options with their applicable scenarios, benefits, and costs
+- Need to translate technical details into Chinese that collaborators can quickly understand
+
+If it's just a normal Chinese answer without reporting, explaining, or comparing options, this skill is not needed.
+
+## Prohibited Patterns
+
+### 1. No invented metaphors replacing plain language
+
+| Prohibited | Should write | Why |
+|-----------|-------------|-----|
+| Made-up metaphorical terms | Plain, direct descriptions | Invented terms are not standard Chinese dev terminology |
+| Stiff literal translations of English concepts | Natural Chinese equivalents or keep the English term | Forced translations are harder to understand than the original English |
+| Slang/jargon ("write to DB" as slang) | "Write to database" or "Save to database" | Slang is inappropriate for written reports |
+
+### 2. No European-style Chinese
+
+Characteristics: overly long subjects, excessive passive voice, three or more consecutive "de" (的) modifiers.
+
+**Rule:** If a sentence exceeds ~40 characters, break it up. If it doesn't sound natural when read aloud, rewrite it.
+
+### 3. No pointless Chinese-English mixing
+
+Technical nouns in English are normal (SQLite, Repository, bundle, manifest), but verbs and connectors must be in Chinese.
+
+**Allowed English:**
+- Function names, class names, package names: `build_compile_request`, `ExecutionPackage`
+- Widely-used English technical terms: `bundle`, `manifest`, `provenance`, `SQLite`
+- Terms where the English is clearer than any Chinese translation: `Repository` (clearer than forced Chinese translations)
+
+## Reporting Structure
+
+### Progress Report Template
+
+Each report should let a manager know three things within 10 seconds: **what was done, current status, what's next.**
+
+```markdown
+## Progress
+
+**Completed:**
+- Defined internal interfaces for compilation artifacts (ExecutionBundle, CompileManifest)
+- Added two new tables in SQLite database for storing compilation records
+- Compiler module now follows "compile and store first, then execute" workflow
+
+**Current status:** Core workflow tests passed, running regression tests
+
+**Next step:** Update README and design docs to document this change
+```
+
+### When Asking for Decisions, Be Specific
+
+When the user needs to make a choice, don't just list technical options — explain what real-world scenario each option fits, its benefits, and its costs.
+
+```
+Bad (vague):
+"Option A: Use SQLite WAL mode
+ Option B: Use normal mode
+ Please choose."
+
+Good (specific):
+"Two choices for database write mode:
+
+Option A: Enable WAL mode
+→ Fits: Multiple tasks reading/writing simultaneously (e.g., compiling and querying at the same time)
+→ Benefit: Reads and writes don't block each other, good concurrency
+→ Cost: Extra WAL file on disk, ~a few MB
+
+Option B: Keep default mode
+→ Fits: Tasks are mostly sequential, only one writing at a time
+→ Benefit: Simple, no extra configuration
+→ Cost: Writes block reads
+
+Our current usage is [specific description], I recommend Option X. What do you think?"
+```
+
+### Code Change Descriptions
+
+Explain what files changed, why, and whether anything else is affected.
+
+```markdown
+## Changes
+
+**What changed:**
+- `compiler.py`: Added bundle packaging and manifest generation to the compilation flow
+- `repository.py`: Added read/write methods for two new tables (compile_bundles, compile_manifests)
+- `runtime.py`: Now reads compilation artifacts from database before execution, no longer calls compiler directly
+
+**Why:**
+Previously, compilation results were temporary and discarded after execution. Now we persist them for post-hoc auditing and troubleshooting.
+
+**Impact scope:**
+- External interfaces unchanged — existing commands and APIs are not affected
+- Database will auto-create new tables, no manual migration needed
+```
+
+## Self-Check Checklist
+
+After writing Chinese content, check each item:
+
+1. **Does it sound natural when read aloud?** — If you stumble, rewrite it
+2. **Are there three consecutive "de" (的)?** — If yes, split the sentence
+3. **Are verbs in Chinese?** — Function names can be English, but action words like "do/change/add/delete" must be Chinese
+4. **Can a manager understand it?** — Can a non-coder grasp the key point within 10 seconds?
+5. **Any self-invented terms?** — Check if anyone else actually uses that word
+6. **Are options clearly explained?** — Each option should state its real-world scenario, benefits, and costs
+
+## Common Mistakes Reference
+
+| Original | Problem | Fixed |
+|----------|---------|-------|
+| Invented metaphorical jargon | Made-up terms no one understands | Plain, direct language |
+| Stiff literal translations + invented words | Forced translations | Define interfaces clearly, specify storage approach |
+| Slang terms for database operations | Slang inappropriate for reports | "Compile and save to database, then execute" |
+| "Command protocol" | Unnatural phrasing | "Command format" |
+| Piling up jargon in one phrase | Term overload | Break into clear items: packaging artifacts, generating manifests, recording provenance |
+| Completely opaque jargon | Incomprehensible | "Started writing the database layer code" |
+| Overly technical follow-up | Needs plain language | "Testing focuses on three things: 1. Artifacts are actually generated 2. Database reads/writes work 3. Records aren't lost on execution failure" |
+| Casual/metaphorical language in reports | Informal tone | "Confirm API and approval workflow are not affected by this change" |
+| Overly literary phrasing | Too poetic for technical writing | "Append this change record to memory.txt" |
+
 ---
 
 # 面向管理者的中文开发沟通规范
