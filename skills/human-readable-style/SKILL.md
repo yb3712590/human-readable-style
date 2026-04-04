@@ -1,6 +1,6 @@
 ---
 name: human-readable-style
-description: Use when generating Chinese-language development progress reports, status updates, code review summaries, or any user-facing communication in development workflows — especially when the audience is a project manager or non-compiler-level stakeholder
+description: Use when starting any conversation that involves Chinese-language output — applies to all thinking, reasoning, and responses in Chinese, ensuring natural and readable style before ANY output is generated
 ---
 
 # 面向管理者的中文开发沟通规范
